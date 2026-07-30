@@ -1,8 +1,31 @@
 # phone-rangefinder
 
-스마트폰 사진 한 장으로 물체까지의 거리를 재는 도구. 인쇄한 ArUco 마커를 기준으로 삼아, 여러 장의 사진을 반복 측정하고 이상치를 제거·평균해 정확도를 끌어올린다. 실제 거리를 알려주면 오차가 실험 일지에 누적 기록되어, 연구하듯 정확도를 개선해 나갈 수 있다.
+스마트폰 사진 한 장으로 물체까지의 거리를 재는 도구. 두 가지 방식을 제공한다.
 
-## 원리
+| 방식 | 파일 | 준비물 | 정확도 |
+|------|------|--------|--------|
+| **AI 깊이 추정** | `depth_distance.py` | 없음 (사진만) | 초기 5~15% → 실측 보정으로 개선 |
+| **마커 기준** | `phone_distance.py` | 인쇄한 ArUco 마커 | mm 단위 (캘리브레이션 후) |
+
+두 방식 모두 실제 거리를 알려주면 오차가 실험 일지(csv)에 누적 기록되어, 연구하듯 정확도를 개선해 나갈 수 있다.
+
+## AI 깊이 추정 방식 (기준물 불필요)
+
+Depth Anything V2 모델이 사진의 모든 픽셀 거리를 추정한다. 사진을 찍고 물체를 클릭하면 거리가 나온다.
+
+```bash
+pip install -r requirements.txt
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+pip install transformers
+
+python depth_distance.py measure 사진.jpg                 # 클릭 → 거리
+python depth_distance.py calibrate 사진.jpg --true-dist 1.20  # 실측 보정 (정확도↑)
+python depth_distance.py measure 사진.jpg --true-dist 1.20    # 오차 기록
+```
+
+첫 실행 시 모델(~100MB)이 자동 다운로드된다. 실측으로 calibrate 할수록 보정계수가 쌓여 정확해진다(`depth_scale.json`). 결과 깊이맵은 `*_depth.png`로 저장되어 AI가 장면을 어떻게 봤는지 확인할 수 있다.
+
+## 마커 기준 방식 원리
 
 크기를 아는 평면 마커(ArUco)를 카메라로 찍으면, 이미지 속 마커 네 꼭짓점의 위치로부터 `solvePnP`가 카메라–마커 사이의 3D 자세를 복원한다. 그 이동 벡터의 크기가 곧 거리다. 촬영 각도는 자세 추정이 자동 보정하므로 기울여 찍어도 된다.
 
