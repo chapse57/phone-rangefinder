@@ -1,0 +1,21 @@
+# 사용자 촬영 사진과 개인 데이터
+photos/*
+!photos/.gitkeep
+
+# 캘리브레이션·실험 결과 (개인 기기별)
+camera.json
+experiment_log.csv
+
+# 생성물
+marker_print_A4.png
+sim/results/
+
+# 파이썬
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db

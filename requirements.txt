@@ -1,0 +1,4 @@
+opencv-contrib-python>=4.7
+pillow>=9.0
+numpy>=1.21
+matplotlib>=3.5
